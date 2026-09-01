@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h4 class="fw-bold text-main"><i class="fa-solid fa-calendar-check me-2"></i>Appointments</h4>
+        <p class="text-muted mb-0">Manage all patient appointments here.</p>
+    </div>
+    <div>
+        <a href="{{ url_for('appointments.add_appointment') }}" class="btn btn-primary rounded-pill">
+            <i class="fa-solid fa-plus me-2"></i> New Appointment
+        </a>
+    </div>
+</div>
+
+<div class="card glass">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in appointments %}
+                    <tr>
+                        <td>{{ a.id }}</td>
+                        <td>{{ a.date }}</td>
+                        <td>{{ a.time }}</td>
+                        <td>{{ a.patient.name if a.patient else '—' }}</td>
+                        <td>{{ a.doctor.name if a.doctor else '—' }}</td>
+                        <td>{{ a.status }}</td>
+                        <td>
+                            <a href="{{ url_for('appointments.edit_appointment', id=a.id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                            <form method="POST" action="{{ url_for('appointments.delete_appointment', id=a.id) }}" style="display:inline-block;" onsubmit="return confirm('Delete this appointment?');">
+                                <button class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="7" class="text-center text-muted py-3">No appointments found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

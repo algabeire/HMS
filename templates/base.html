@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management System</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div class="glass-sidebar" id="sidebar">
+            <div class="sidebar-heading">
+                <i class="fa-solid fa-hospital"></i> HMS
+            </div>
+            <div class="list-group list-group-flush mt-4">
+                <a href="{{ url_for('dashboard.index') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'dashboard.index' %}active{% endif %}">
+                    <i class="fa-solid fa-chart-pie"></i> Dashboard
+                </a>
+                <a href="{{ url_for('doctors.list_doctors') }}" class="list-group-item list-group-item-action {% if request.endpoint and request.endpoint.startswith('doctors') %}active{% endif %}">
+                    <i class="fa-solid fa-user-doctor"></i> Doctors
+                </a>
+                <a href="{{ url_for('patients.list_patients') }}" class="list-group-item list-group-item-action {% if request.endpoint and request.endpoint.startswith('patients') %}active{% endif %}">
+                    <i class="fa-solid fa-bed-pulse"></i> Patients
+                </a>
+                <a href="{{ url_for('appointments.list_appointments') }}" class="list-group-item list-group-item-action {% if request.endpoint and request.endpoint.startswith('appointments') %}active{% endif %}">
+                    <i class="fa-solid fa-calendar-check"></i> Appointments
+                </a>
+                <a href="{{ url_for('beds.list_beds') }}" class="list-group-item list-group-item-action {% if request.endpoint and request.endpoint.startswith('beds') %}active{% endif %}">
+                    <i class="fa-solid fa-bed"></i> Bed Management
+                </a>
+                <a href="{{ url_for('billing.list_billing') }}" class="list-group-item list-group-item-action {% if request.endpoint and request.endpoint.startswith('billing') %}active{% endif %}">
+                    <i class="fa-solid fa-file-invoice-dollar"></i> Billing & Finance
+                </a>
+                <a href="{{ url_for('emr.list_emr') }}" class="list-group-item list-group-item-action {% if request.endpoint and request.endpoint.startswith('emr') %}active{% endif %}">
+                    <i class="fa-solid fa-notes-medical"></i> EMR
+                </a>
+            </div>
+        </div>
+
+        <!-- Page Content -->
+        <div id="content-wrapper">
+            <nav class="navbar navbar-expand-lg">
+                <div class="container-fluid">
+                    <button class="btn btn-light d-lg-none" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+                    <div class="ms-auto d-flex align-items-center">
+                        <span class="me-3 fw-medium">Welcome, Admin</span>
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger btn-sm rounded-pill px-3">Logout</a>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="container-fluid px-4 py-3 fade-in">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show glass" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+        <!-- For unauthenticated users (Login page) -->
+        <div class="container-fluid px-4 py-3">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show glass" style="max-width: 400px; margin: 0 auto;" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% block auth_content %}{% endblock %}
+        </div>
+    {% endif %}
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function(){
+            const toggle = document.getElementById('sidebarToggle');
+            if(!toggle) return;
+
+            function closeSidebar(){
+                document.body.classList.remove('sidebar-open');
+                const overlay = document.getElementById('sidebarOverlay');
+                if(overlay) overlay.remove();
+            }
+
+            function openSidebar(){
+                if(!document.getElementById('sidebarOverlay')){
+                    const overlay = document.createElement('div');
+                    overlay.id = 'sidebarOverlay';
+                    overlay.addEventListener('click', closeSidebar);
+                    document.body.appendChild(overlay);
+                }
+                document.body.classList.add('sidebar-open');
+            }
+
+            toggle.addEventListener('click', function(e){
+                e.stopPropagation();
+                if(document.body.classList.contains('sidebar-open')){
+                    closeSidebar();
+                } else {
+                    openSidebar();
+                }
+            });
+
+            // Close sidebar when clicking outside on larger screens
+            document.addEventListener('keydown', function(e){
+                if(e.key === 'Escape') closeSidebar();
+            });
+        })();
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">Dashboard Overview</h2>
+    <div class="text-muted"><i class="fa-regular fa-calendar"></i> Today: {{ today }}</div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-3">
+        <div class="card glass summary-card h-100 p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted fw-bold text-uppercase mb-1">Total Doctors</h6>
+                    <h2 class="fw-bold mb-0">{{ total_doctors }}</h2>
+                </div>
+                <div class="card-icon"><i class="fa-solid fa-user-doctor"></i></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card glass summary-card h-100 p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted fw-bold text-uppercase mb-1">Total Patients</h6>
+                    <h2 class="fw-bold mb-0">{{ total_patients }}</h2>
+                </div>
+                <div class="card-icon text-success"><i class="fa-solid fa-bed-pulse"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card glass summary-card h-100 p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted fw-bold text-uppercase mb-1">Upcoming Appointments</h6>
+                    <h2 class="fw-bold mb-0">{{ today_appointments }}</h2>
+                </div>
+                <div class="card-icon text-warning"><i class="fa-regular fa-calendar-check"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card glass summary-card h-100 p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted fw-bold text-uppercase mb-1">Available Beds</h6>
+                    <h2 class="fw-bold mb-0">{{ available_beds }}</h2>
+                </div>
+                <div class="card-icon text-info"><i class="fa-solid fa-bed"></i></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Chart Section -->
+    <div class="col-lg-7">
+        <div class="card glass p-4 h-100">
+            <h5 class="fw-bold mb-4">Patient Admissions (Last 4 Weeks)</h5>
+            <canvas id="admissionsChart" style="max-height: 300px;"></canvas>
+        </div>
+    </div>
+    
+    <!-- Recent Activity -->
+    <div class="col-lg-5">
+        <div class="card glass p-4 h-100">
+            <h5 class="fw-bold mb-4">Recent Patients</h5>
+            {% if recent_patients %}
+            <div class="table-responsive">
+                <table class="table table-borderless table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for patient in recent_patients %}
+                        <tr>
+                            <td class="fw-medium">{{ patient.name }}</td>
+                            <td>
+                                {% if patient.status == 'admitted' %}
+                                    <span class="badge bg-danger rounded-pill">Admitted</span>
+                                {% elif patient.status == 'discharged' %}
+                                    <span class="badge bg-success rounded-pill">Discharged</span>
+                                {% else %}
+                                    <span class="badge bg-secondary rounded-pill">Outpatient</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted small">{{ patient.admission_date.strftime('%Y-%m-%d') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">No recent patients found.</p>
+            {% endif %}
+            <div class="mt-auto text-end">
+                <a href="{{ url_for('patients.list_patients') }}" class="btn btn-sm btn-outline-primary rounded-pill">View All</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-lg-12">
+        <div class="card glass p-4">
+            <h5 class="fw-bold mb-3">Next Appointments</h5>
+            {% if upcoming_appointments %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in upcoming_appointments %}
+                        <tr>
+                            <td>{{ a.date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ a.time.strftime('%H:%M') if a.time else '—' }}</td>
+                            <td>{{ a.patient.name if a.patient else '—' }}</td>
+                            <td>{{ a.doctor.name if a.doctor else '—' }}</td>
+                            <td>{{ a.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">No upcoming appointments.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('admissionsChart').getContext('2d');
+        const chartData = {{ chart_data|tojson }};
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.labels,
+                datasets: [{
+                    label: 'New Patients',
+                    data: chartData.data,
+                    borderColor: '#4361ee',
+                    backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#4361ee',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { borderDash: [5, 5], color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

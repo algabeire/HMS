@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">{% if patient %}Edit{% else %}Add{% endif %} Patient</h2>
+    <a href="{{ url_for('patients.list_patients') }}" class="btn btn-outline-secondary rounded-pill px-4">
+        <i class="fa-solid fa-arrow-left me-2"></i> Back
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card glass p-4">
+            <form method="POST" action="{% if patient %}{{ url_for('patients.edit_patient', id=patient.id) }}{% else %}{{ url_for('patients.add_patient') }}{% endif %}">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-12">
+                        <label class="form-label fw-medium">Full Name</label>
+                        <input type="text" name="name" class="form-control" value="{{ patient.name if patient else '' }}" required placeholder="e.g., Jane Smith">
+                    </div>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Age</label>
+                        <input type="number" name="age" class="form-control" value="{{ patient.age if patient else '' }}" required min="0">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Gender</label>
+                        <select name="gender" class="form-select">
+                            <option value="">Select Gender</option>
+                            <option value="Male" {% if patient and patient.gender == 'Male' %}selected{% endif %}>Male</option>
+                            <option value="Female" {% if patient and patient.gender == 'Female' %}selected{% endif %}>Female</option>
+                            <option value="Other" {% if patient and patient.gender == 'Other' %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Phone</label>
+                        <input type="text" name="phone" class="form-control" value="{{ patient.phone if patient else '' }}" placeholder="Contact number">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Status</label>
+                        <select name="status" class="form-select">
+                            <option value="outpatient" {% if patient and patient.status == 'outpatient' %}selected{% endif %}>Outpatient</option>
+                            <option value="admitted" {% if patient and patient.status == 'admitted' %}selected{% endif %}>Admitted</option>
+                            <option value="discharged" {% if patient and patient.status == 'discharged' %}selected{% endif %}>Discharged</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-medium">Address</label>
+                    <textarea name="address" class="form-control" rows="2">{{ patient.address if patient else '' }}</textarea>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label fw-medium">Assign Doctor</label>
+                    <select name="doctor_id" class="form-select">
+                        <option value="">No Assigned Doctor</option>
+                        {% for doctor in doctors %}
+                        <option value="{{ doctor.id }}" {% if patient and patient.doctor_id == doctor.id %}selected{% endif %}>
+                            Dr. {{ doctor.name }} ({{ doctor.specialization }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <hr class="mb-4 opacity-25">
+                
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary rounded-pill px-5">
+                        {% if patient %}Update{% else %}Save{% endif %} Patient
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

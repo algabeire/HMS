@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">Doctors Management</h2>
+    <a href="{{ url_for('doctors.add_doctor') }}" class="btn btn-primary rounded-pill px-4">
+        <i class="fa-solid fa-plus me-2"></i> Add New Doctor
+    </a>
+</div>
+
+<div class="card glass p-4 mb-4">
+    <form method="GET" action="{{ url_for('doctors.list_doctors') }}" class="d-flex gap-2 mb-0" style="max-width: 400px;">
+        <input type="text" name="search" class="form-control rounded-pill bg-light border-0" placeholder="Search doctors by name..." value="{{ request.args.get('search', '') }}">
+        <button type="submit" class="btn btn-primary rounded-pill px-3"><i class="fa-solid fa-search"></i></button>
+    </form>
+</div>
+
+<div class="card glass p-4">
+    <div class="table-responsive">
+        <table class="table table-hover table-borderless">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Specialization</th>
+                    <th>Department</th>
+                    <th>Contact</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doctor in doctors %}
+                <tr>
+                    <td class="fw-medium">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-3" style="width: 40px; height: 40px;">
+                                {{ doctor.name[0] }}
+                            </div>
+                            Dr. {{ doctor.name }}
+                        </div>
+                    </td>
+                    <td>{{ doctor.specialization }}</td>
+                    <td><span class="badge bg-light text-dark">{{ doctor.department }}</span></td>
+                    <td>
+                        <div class="small text-muted"><i class="fa-solid fa-phone me-1"></i> {{ doctor.phone }}</div>
+                        <div class="small text-muted"><i class="fa-solid fa-envelope me-1"></i> {{ doctor.email }}</div>
+                    </td>
+                    <td class="text-end">
+                        <a href="{{ url_for('doctors.edit_doctor', id=doctor.id) }}" class="btn btn-sm btn-outline-secondary rounded-pill me-1"><i class="fa-solid fa-pen"></i></a>
+                        <form action="{{ url_for('doctors.delete_doctor', id=doctor.id) }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill" onclick="return confirm('Are you sure you want to delete this doctor?');"><i class="fa-solid fa-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-muted">No doctors found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

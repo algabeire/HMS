@@ -1,0 +1,183 @@
+:root {
+    --primary-color: #4361ee;
+    --secondary-color: #3f37c9;
+    --accent-color: #4cc9f0;
+    --bg-color: #f8f9fa;
+    --text-main: #2b2d42;
+    --text-muted: #6c757d;
+    --sidebar-bg: rgba(255, 255, 255, 0.85);
+    --card-bg: rgba(255, 255, 255, 0.95);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background-attachment: fixed;
+    color: var(--text-main);
+    min-height: 100vh;
+}
+
+/* Glassmorphism utilities */
+.glass {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 1rem;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+}
+
+.glass-sidebar {
+    background: var(--sidebar-bg);
+    backdrop-filter: blur(15px);
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 2px 0 15px rgba(0,0,0,0.05);
+}
+
+/* Layout */
+#wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+#sidebar {
+    width: 260px;
+    transition: all 0.3s;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    z-index: 1000;
+}
+
+#content-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+.sidebar-heading {
+    padding: 1.5rem 1rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+.list-group-item {
+    background: transparent;
+    border: none;
+    padding: 1rem 1.5rem;
+    color: var(--text-main);
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.list-group-item:hover, .list-group-item.active {
+    background: rgba(67, 97, 238, 0.1);
+    color: var(--primary-color);
+    border-left: 4px solid var(--primary-color);
+}
+
+.list-group-item i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+/* Navbar */
+.navbar {
+    background: transparent;
+    padding: 1rem 2rem;
+}
+
+/* Cards */
+.summary-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(31, 38, 135, 0.1);
+}
+
+.card-icon {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    opacity: 0.8;
+}
+
+/* Buttons */
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border: none;
+    box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Tables */
+.table {
+    --bs-table-bg: transparent;
+}
+
+.table th {
+    font-weight: 600;
+    color: var(--text-muted);
+    border-bottom: 2px solid rgba(0,0,0,0.05);
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Responsive sidebar behavior for small screens */
+@media (max-width: 991.98px) {
+    #sidebar {
+        transform: translateX(-100%);
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        box-shadow: 2px 0 15px rgba(0,0,0,0.15);
+        z-index: 1200;
+    }
+
+    body.sidebar-open #sidebar {
+        transform: translateX(0);
+    }
+
+    /* Overlay element shown when sidebar is open */
+    #sidebarOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.35);
+        z-index: 1100;
+    }
+
+    body.sidebar-open #sidebarOverlay {
+        display: block;
+    }
+
+    /* Make content appear above overlay */
+    #content-wrapper {
+        position: relative;
+        z-index: 1000;
+    }
+}

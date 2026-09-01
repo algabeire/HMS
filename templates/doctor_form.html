@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">{% if doctor %}Edit{% else %}Add{% endif %} Doctor</h2>
+    <a href="{{ url_for('doctors.list_doctors') }}" class="btn btn-outline-secondary rounded-pill px-4">
+        <i class="fa-solid fa-arrow-left me-2"></i> Back
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card glass p-4">
+            <form method="POST" action="{% if doctor %}{{ url_for('doctors.edit_doctor', id=doctor.id) }}{% else %}{{ url_for('doctors.add_doctor') }}{% endif %}">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Full Name</label>
+                        <input type="text" name="name" class="form-control" value="{{ doctor.name if doctor else '' }}" required placeholder="e.g., John Doe">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Specialization</label>
+                        <input type="text" name="specialization" class="form-control" value="{{ doctor.specialization if doctor else '' }}" required placeholder="e.g., Cardiologist">
+                    </div>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Phone</label>
+                        <input type="text" name="phone" class="form-control" value="{{ doctor.phone if doctor else '' }}" placeholder="e.g., +1 234 567 8900">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Email</label>
+                        <input type="email" name="email" class="form-control" value="{{ doctor.email if doctor else '' }}" placeholder="doctor@hospital.com">
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-medium">Department</label>
+                    <input type="text" name="department" class="form-control" value="{{ doctor.department if doctor else '' }}" placeholder="e.g., Cardiology">
+                </div>
+                
+                <hr class="mb-4 opacity-25">
+                
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary rounded-pill px-5">
+                        {% if doctor %}Update{% else %}Save{% endif %} Doctor
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
