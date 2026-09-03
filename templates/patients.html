@@ -39,8 +39,9 @@
                         </div>
                     </td>
                     <td>
-                        <div class="small text-muted">{{ patient.age }} yrs, {{ patient.gender }}</div>
-                        <div class="small text-muted"><i class="fa-solid fa-phone me-1"></i> {{ patient.phone }}</div>
+                        <div class="small text-muted">{{ patient.age }} yrs, {{ patient.gender or 'Not set' }}</div>
+                        <div class="small text-muted">DOB: {{ patient.dob.strftime('%Y-%m-%d') if patient.dob else 'Not set' }}</div>
+                        <div class="small text-muted"><i class="fa-solid fa-phone me-1"></i> {{ patient.phone or 'No phone' }}</div>
                     </td>
                     <td>
                         {% if patient.doctor %}

@@ -19,11 +19,15 @@
                     </div>
                 </div>
                 <div class="row g-3 mb-3">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Date of Birth</label>
+                        <input type="date" name="dob" class="form-control" value="{{ patient.dob.isoformat() if patient and patient.dob else '' }}">
+                    </div>
+                    <div class="col-md-4">
                         <label class="form-label fw-medium">Age</label>
                         <input type="number" name="age" class="form-control" value="{{ patient.age if patient else '' }}" required min="0">
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label fw-medium">Gender</label>
                         <select name="gender" class="form-select">
                             <option value="">Select Gender</option>
